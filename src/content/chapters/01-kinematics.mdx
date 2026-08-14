@@ -1,0 +1,57 @@
+---
+title: Кинематика 2R
+part: Геометрия
+order: 1
+summary: Прямая задача кинематики плоского манипулятора с двумя вращательными суставами.
+---
+
+import Eq from "../../components/Eq.astro"
+import Figure from "../../components/Figure.astro"
+import Scene3D from "../../components/Scene3D.astro"
+import Arm2R from "../../components/scenes/Arm2R.vue"
+import { Code } from "astro-expressive-code/components"
+import fk from "../../../examples/fk.py?raw"
+
+Конфигурация руки — пара углов в суставах. Её удобно писать как точку на торе:
+
+<Eq display math="q = (q_1, q_2) in cal(Q) subset.eq bb(R)^2" />
+
+Если длины звеньев <Eq math="l_1" /> и <Eq math="l_2" />, прямая задача кинематики даёт положение схвата:
+
+<Eq display math="vec(x, y) = vec(l_1 cos(q_1) + l_2 cos(q_1 + q_2), l_1 sin(q_1) + l_2 sin(q_1 + q_2))" />
+
+Геометрия та же, что на схеме: первое звено поворачивается на <Eq math="q_1" />, второе — ещё на <Eq math="q_2" /> относительно первого.
+
+<Figure src="rr-arm.typ" caption="Плоский RR-манипулятор: звенья l₁, l₂ и схват p = (x, y)." />
+
+Та же геометрия в 3D: крутите суставы ползунками, камеру — мышью. Готовый робот из CAD кладётся как `.glb` в `public/models/` и вставляется через `Model3D`.
+
+<Scene3D caption="Интерактивный 2R: q₁ и q₂ в градусах, Y вверх, как на схеме.">
+  <Arm2R client:only="vue">
+    <p class="book-scene-loading">Загрузка 3D…</p>
+  </Arm2R>
+</Scene3D>
+
+## Код на Python
+
+Тот же закон в NumPy. Ниже — фрагмент с акцентом на строки с тригонометрией:
+
+```python title="fk.py" {6-9}
+import numpy as np
+
+def fk(q, l1, l2):
+    q1, q2 = q
+    x = l1 * np.cos(q1) + l2 * np.cos(q1 + q2)
+    y = l1 * np.sin(q1) + l2 * np.sin(q1 + q2)
+    return np.array([x, y])
+```
+
+Полный файл живёт в `examples/` и вставляется как есть — его можно гонять отдельно от сайта:
+
+<Code code={fk} lang="python" title="examples/fk.py" />
+
+Короткий запуск из терминала:
+
+```bash
+python examples/fk.py
+```

@@ -1,0 +1,76 @@
+---
+import { ClientRouter } from "astro:transitions";
+import "../styles/global.css";
+import ThemeToggle from "../components/ThemeToggle.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  print?: boolean;
+}
+
+const { title, description, print = false } = Astro.props;
+const pageTitle = title
+  ? `${title} · Книга по робототехнике`
+  : "Книга по робототехнике";
+---
+
+<!doctype html>
+<html
+  lang="ru"
+  transition:animate="none"
+  data-theme={print ? "light" : undefined}
+  data-print={print ? "true" : undefined}
+>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    {description && <meta name="description" content={description} />}
+    <title>{pageTitle}</title>
+    {!print && <ClientRouter fallback="swap" />}
+    {
+      !print && (
+        <script is:inline>
+          (function () {
+            function readTheme() {
+              try {
+                return (
+                  localStorage.getItem("theme") ||
+                  (window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark"
+                    : "light")
+                );
+              } catch (e) {
+                return "light";
+              }
+            }
+            function applyTheme(root) {
+              root.dataset.theme = readTheme();
+            }
+            applyTheme(document.documentElement);
+            if (!window.__themeSwapBound) {
+              window.__themeSwapBound = true;
+              document.addEventListener("astro:before-swap", function (event) {
+                applyTheme(event.newDocument.documentElement);
+              });
+            }
+          })();
+        </script>
+      )
+    }
+  </head>
+  <body>
+    <a class="skip-link" href="#content">К содержанию</a>
+    <header class="site-header" transition:persist="site-header">
+      <a class="site-mark" href="/">Книга по робототехнике</a>
+      <nav class="site-nav" aria-label="Разделы">
+        <a href="/">Оглавление</a>
+        <a href="/downloads/">Скачать</a>
+      </nav>
+      {!print && <ThemeToggle />}
+    </header>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,73 @@
+---
+import Base from "../layouts/Base.astro";
+import type { Chapter } from "../lib/chapters";
+import { groupedByPart } from "../lib/chapters";
+
+interface Props {
+  title: string;
+  description?: string;
+  chapters: Chapter[];
+  currentId?: string;
+  prev?: Chapter;
+  next?: Chapter;
+}
+
+const { title, description, chapters, currentId, prev, next } = Astro.props;
+const parts = groupedByPart(chapters);
+---
+
+<Base title={title} description={description}>
+  <div class="book-shell">
+    <aside class="toc" transition:persist="book-toc">
+      <p class="toc-label">Оглавление</p>
+      {
+        parts.map(({ part, chapters: partChapters }) => (
+          <section class="toc-part">
+            <h2>{part}</h2>
+            <ol>
+              {partChapters.map((chapter) => (
+                <li>
+                  <a
+                    href={`/chapters/${chapter.id}/`}
+                    aria-current={chapter.id === currentId ? "page" : undefined}
+                  >
+                    {chapter.data.title}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))
+      }
+    </aside>
+
+    <div class="book-main">
+      <article id="content" class="chapter-body">
+        <slot />
+      </article>
+
+      {
+        (prev || next) && (
+          <nav class="pager" aria-label="Соседние главы">
+            {prev ? (
+              <a class="pager-link" href={`/chapters/${prev.id}/`}>
+                <span class="pager-dir">Назад</span>
+                <span class="pager-title">{prev.data.title}</span>
+              </a>
+            ) : (
+              <span />
+            )}
+            {next ? (
+              <a class="pager-link pager-next" href={`/chapters/${next.id}/`}>
+                <span class="pager-dir">Дальше</span>
+                <span class="pager-title">{next.data.title}</span>
+              </a>
+            ) : (
+              <span />
+            )}
+          </nav>
+        )
+      }
+    </div>
+  </div>
+</Base>

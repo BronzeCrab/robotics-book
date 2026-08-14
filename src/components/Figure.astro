@@ -1,0 +1,21 @@
+---
+import path from "node:path";
+import { Typst } from "astro-typst/src/components";
+
+interface Props {
+  src: string;
+  caption: string;
+}
+
+const { src, caption } = Astro.props;
+const mainFilePath = path
+  .resolve("src/content/figures", src)
+  .replaceAll("\\", "/");
+---
+
+<figure class="book-figure">
+  <div class="book-figure-frame">
+    <Typst src={mainFilePath} target="svg" />
+  </div>
+  <figcaption>{caption}</figcaption>
+</figure>

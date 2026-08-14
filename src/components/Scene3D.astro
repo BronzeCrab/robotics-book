@@ -1,0 +1,17 @@
+---
+interface Props {
+  caption: string;
+}
+
+const { caption } = Astro.props;
+---
+
+<figure class="book-scene">
+  <div class="book-scene-frame">
+    <slot />
+  </div>
+  <p class="book-scene-fallback">
+    Интерактивная 3D-сцена. Откройте главу на сайте, чтобы вращать модель.
+  </p>
+  <figcaption>{caption}</figcaption>
+</figure>

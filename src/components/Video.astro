@@ -1,0 +1,51 @@
+---
+import { parseVideoSrc } from "../lib/video";
+import { resolveMediaUrl } from "../lib/media";
+
+interface Props {
+  src: string;
+  caption: string;
+  title?: string;
+  poster?: string;
+  start?: number;
+}
+
+const { src, caption, title, poster, start } = Astro.props;
+const video = parseVideoSrc(src);
+const label = title ?? caption;
+const posterSrc = poster ? resolveMediaUrl(poster, "videos") : undefined;
+
+const embedSrc =
+  video.kind === "youtube" && start
+    ? `${video.embedSrc}?start=${start}`
+    : video.kind === "vimeo" && start
+      ? `${video.embedSrc}#t=${start}s`
+      : video.embedSrc;
+---
+
+<figure class="book-video">
+  <div class="book-video-frame">
+    {
+      video.kind === "file" ? (
+        <video controls preload="metadata" poster={posterSrc} title={label}>
+          <source src={embedSrc} />
+          <a href={video.watchUrl}>{label}</a>
+        </video>
+      ) : (
+        <iframe
+          src={embedSrc}
+          title={label}
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+        />
+      )
+    }
+  </div>
+  <p class="book-video-link">
+    Видео ({video.providerLabel}):
+    <a href={video.watchUrl}>{label}</a>
+  </p>
+  <figcaption>{caption}</figcaption>
+</figure>

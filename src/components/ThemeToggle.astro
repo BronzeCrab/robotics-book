@@ -1,0 +1,61 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<button
+  type="button"
+  class:list={["theme-toggle", className]}
+  data-theme-toggle
+  aria-label="Переключить тему"
+>
+  <span class="theme-toggle-icon theme-toggle-sun" aria-hidden="true">☀</span>
+  <span class="theme-toggle-icon theme-toggle-moon" aria-hidden="true">☾</span>
+</button>
+
+<script>
+  function readTheme() {
+    try {
+      return (
+        localStorage.getItem("theme") ||
+        (window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light")
+      );
+    } catch {
+      return "light";
+    }
+  }
+
+  function applyTheme(theme: string, root = document.documentElement) {
+    root.dataset.theme = theme;
+  }
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (!target.closest("[data-theme-toggle]")) return;
+    const next =
+      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    applyTheme(next);
+    localStorage.setItem("theme", next);
+  });
+
+  document.addEventListener("astro:before-swap", (event) => {
+    applyTheme(readTheme(), event.newDocument.documentElement);
+  });
+
+  document.addEventListener("astro:page-load", () => {
+    applyTheme(readTheme());
+    const path = location.pathname;
+    document.querySelectorAll(".toc a[href]").forEach((link) => {
+      if (!(link instanceof HTMLAnchorElement)) return;
+      const current = link.pathname === path;
+      if (current) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    });
+  });
+</script>

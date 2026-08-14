@@ -1,0 +1,38 @@
+---
+import { render } from "astro:content";
+import BookLayout from "../../components/BookLayout.astro";
+import { getChapters, neighbors } from "../../lib/chapters";
+import type { Chapter } from "../../lib/chapters";
+
+export async function getStaticPaths() {
+  const chapters = await getChapters();
+  return chapters.map((chapter) => ({
+    params: { slug: chapter.id },
+    props: { chapter, chapters },
+  }));
+}
+
+interface Props {
+  chapter: Chapter;
+  chapters: Chapter[];
+}
+
+const { chapter, chapters } = Astro.props;
+const { Content } = await render(chapter);
+const { prev, next } = neighbors(chapters, chapter.id);
+---
+
+<BookLayout
+  title={chapter.data.title}
+  description={chapter.data.summary}
+  chapters={chapters}
+  currentId={chapter.id}
+  prev={prev}
+  next={next}
+>
+  <p class="chapter-kicker">{chapter.data.part}</p>
+  <h1>{chapter.data.title}</h1>
+  <p class="chapter-lede">{chapter.data.summary}</p>
+  <Content />
+
+</BookLayout>

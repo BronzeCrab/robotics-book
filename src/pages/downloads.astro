@@ -1,0 +1,52 @@
+---
+import BookLayout from "../components/BookLayout.astro";
+import { getChapters } from "../lib/chapters";
+import { book, downloadHref, ebookFormats } from "../lib/site";
+
+const chapters = await getChapters();
+---
+
+<BookLayout
+  title="Скачать"
+  description="PDF, EPUB, FB2 и офлайн-копия сайта."
+  chapters={chapters}
+>
+  <p class="chapter-kicker">Экспорт</p>
+  <h1>Скачать книгу</h1>
+  <p class="chapter-lede">
+    Файлы собираются вместе с сайтом (`pnpm build`) из тех же глав: формулы уже
+    отрисованы, код уже подсвечен.
+  </p>
+
+  <ul class="download-list">
+    {
+      ebookFormats.map((format) => (
+        <li>
+          <a class="download-card" href={downloadHref(format)} download>
+            <span class="download-ext">{format.ext}</span>
+            <span>
+              <strong>{format.title}</strong>
+              <span class="download-blurb">{format.blurb}</span>
+              <span class="download-readers">{format.readers}</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2>Что не генерируем и почему</h2>
+  <p>
+    MOBI и AZW3 больше не нужны: Amazon Kindle принимает EPUB. Kobo читает EPUB
+    напрямую, отдельный KEPUB не собираем. PDF печатается из HTML-вёрстки A4 —
+    это тот же текст, что на сайте.
+  </p>
+  <p>
+    Для печати из браузера без файла: <a href="/print/">открыть версию для печати</a>.
+  </p>
+  <p class="download-note">
+    Имена файлов: <code>{book.filename}.pdf</code> и так далее в
+    <code>/downloads/</code>. Если ссылка 404, сначала выполните
+    <code>pnpm build</code>.
+  </p>
+</BookLayout>

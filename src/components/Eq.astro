@@ -1,0 +1,41 @@
+---
+import { Typst } from "astro-typst/src/components";
+
+interface Props {
+  math?: string;
+  display?: boolean;
+}
+
+const { math: mathProp, display = false } = Astro.props;
+
+let math = mathProp?.trim() ?? "";
+if (!math && Astro.slots.has("default")) {
+  const html = await Astro.slots.render("default");
+  math = html
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#36;/g, "$")
+    .trim();
+}
+
+math = math.replace(/^\$+/, "").replace(/\$+$/, "").trim();
+
+const wrapped = display ? `$ ${math} $` : `$${math}$`;
+const code = `#import "/src/typst/lib.typ": eq-page
+#show: eq-page
+${wrapped}
+`;
+---
+
+{display ? (
+  <div class="eq eq-display" role="math">
+    <Typst code={code} target="svg" remPx={16} />
+  </div>
+) : (
+  <div class="eq eq-inline" role="math">
+    <Typst code={code} target="svg" remPx={16} />
+  </div>
+)}
