@@ -21,7 +21,9 @@ const first = chapters[0];
   {
     parts.map(({ part, chapters: partChapters }) => (
       <section class="home-part">
-        <h2>{part}</h2>
+        {!(
+          partChapters.length === 1 && partChapters[0].data.title === part
+        ) && <h2>{part}</h2>}
         <ul class="home-chapters">
           {partChapters.map((chapter) => (
             <li>

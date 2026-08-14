@@ -30,7 +30,9 @@ const { prev, next } = neighbors(chapters, chapter.id);
   prev={prev}
   next={next}
 >
-  <p class="chapter-kicker">{chapter.data.part}</p>
+  {chapter.data.part !== chapter.data.title && (
+    <p class="chapter-kicker">{chapter.data.part}</p>
+  )}
   <h1>{chapter.data.title}</h1>
   <p class="chapter-lede">{chapter.data.summary}</p>
   <Content />

@@ -23,7 +23,9 @@ const parts = groupedByPart(chapters);
       {
         parts.map(({ part, chapters: partChapters }) => (
           <section class="toc-part">
-            <h2>{part}</h2>
+            {!(
+              partChapters.length === 1 && partChapters[0].data.title === part
+            ) && <h2>{part}</h2>}
             <ol>
               {partChapters.map((chapter) => (
                 <li>
