@@ -1,6 +1,7 @@
 ---
 import { parseVideoSrc } from "../lib/video";
 import { resolveMediaUrl } from "../lib/media";
+import { asLocale, t } from "../lib/i18n";
 
 interface Props {
   src: string;
@@ -11,9 +12,12 @@ interface Props {
 }
 
 const { src, caption, title, poster, start } = Astro.props;
+const locale = asLocale(Astro.currentLocale);
 const video = parseVideoSrc(src);
 const label = title ?? caption;
 const posterSrc = poster ? resolveMediaUrl(poster, "videos") : undefined;
+const provider =
+  video.kind === "file" ? t(locale, "videoFile") : video.providerLabel;
 
 const embedSrc =
   video.kind === "youtube" && start
@@ -44,7 +48,7 @@ const embedSrc =
     }
   </div>
   <p class="book-video-link">
-    Видео ({video.providerLabel}):
+    {t(locale, "videoLink")} ({provider}):
     <a href={video.watchUrl}>{label}</a>
   </p>
   <figcaption>{caption}</figcaption>

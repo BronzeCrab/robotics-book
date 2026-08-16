@@ -2,7 +2,7 @@ import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { load } from "cheerio";
 import sharp from "sharp";
-import { book } from "../site";
+import { book as defaultBook, type BookMeta } from "../site";
 import type { ExtractedChapter } from "./types";
 
 function escapeXml(value: string) {
@@ -15,7 +15,11 @@ function escapeXml(value: string) {
 
 type Binary = { id: string; contentType: string; data: string };
 
-export async function writeFb2(distDir: string, chapters: ExtractedChapter[]) {
+export async function writeFb2(
+  distDir: string,
+  chapters: ExtractedChapter[],
+  book: BookMeta = defaultBook,
+) {
   const binaries: Binary[] = [];
   const sections: string[] = [];
 

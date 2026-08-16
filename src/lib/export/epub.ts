@@ -1,7 +1,7 @@
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { EPub } from "epub-gen-memory";
-import { book } from "../site";
+import type { BookMeta } from "../site";
 import type { ExtractedChapter } from "./types";
 
 const epubCss = `
@@ -23,7 +23,12 @@ figcaption { font-size: 0.9em; color: #555; text-align: center; }
 .book-scene-fallback { display: block; margin: 0.5em 0; }
 `;
 
-export async function writeEpub(distDir: string, chapters: ExtractedChapter[]) {
+export async function writeEpub(
+  distDir: string,
+  chapters: ExtractedChapter[],
+  book: BookMeta,
+  tocTitle: string,
+) {
   const generator = new EPub(
     {
       title: book.title,
@@ -31,7 +36,7 @@ export async function writeEpub(distDir: string, chapters: ExtractedChapter[]) {
       publisher: book.publisher,
       description: book.description,
       lang: book.language,
-      tocTitle: "Оглавление",
+      tocTitle,
       prependChapterTitles: false,
       version: 3,
       css: epubCss,

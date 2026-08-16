@@ -1,0 +1,30 @@
+---
+import { render } from "astro:content";
+import BookLayout from "../BookLayout.astro";
+import { neighbors, type Chapter } from "../../lib/chapters";
+
+interface Props {
+  chapter: Chapter;
+  chapters: Chapter[];
+}
+
+const { chapter, chapters } = Astro.props;
+const { Content } = await render(chapter);
+const { prev, next } = neighbors(chapters, chapter.id);
+---
+
+<BookLayout
+  title={chapter.data.title}
+  description={chapter.data.summary}
+  chapters={chapters}
+  currentId={chapter.id}
+  prev={prev}
+  next={next}
+>
+  {chapter.data.part !== chapter.data.title && (
+    <p class="chapter-kicker">{chapter.data.part}</p>
+  )}
+  <h1>{chapter.data.title}</h1>
+  <p class="chapter-lede">{chapter.data.summary}</p>
+  <Content />
+</BookLayout>

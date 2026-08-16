@@ -1,0 +1,80 @@
+---
+import { asLocale, localePath, otherLocale, stripLocale, t } from "../lib/i18n";
+
+const locale = asLocale(Astro.currentLocale);
+const next = otherLocale(locale);
+const href = localePath(next, stripLocale(Astro.url.pathname));
+const label = next === "en" ? t(locale, "langToEn") : t(locale, "langToRu");
+---
+
+<a
+  class="lang-toggle"
+  href={href}
+  hreflang={next}
+  lang={next}
+  data-lang-toggle
+  data-lang-next={next}
+  aria-label={label}
+  title={label}
+>
+  {next.toUpperCase()}
+</a>
+
+<script>
+  const DEFAULT_LOCALE = "ru";
+
+  function localeFromPath(pathname: string) {
+    if (pathname === "/en" || pathname.startsWith("/en/")) return "en";
+    return "ru";
+  }
+
+  function stripLocale(pathname: string) {
+    if (pathname === "/en" || pathname === "/en/") return "/";
+    if (pathname.startsWith("/en/")) return pathname.slice(3);
+    return pathname;
+  }
+
+  function localePath(locale: string, path: string) {
+    if (locale === DEFAULT_LOCALE) return path;
+    if (path === "/") return `/${locale}/`;
+    return `/${locale}${path}`;
+  }
+
+  function syncLangToggle() {
+    const current = localeFromPath(location.pathname);
+    const next = current === "ru" ? "en" : "ru";
+    const href = localePath(next, stripLocale(location.pathname));
+    const label = next === "en" ? "Switch to English" : "Переключить на русский";
+    document.querySelectorAll("[data-lang-toggle]").forEach((node) => {
+      if (!(node instanceof HTMLAnchorElement)) return;
+      node.href = href;
+      node.textContent = next.toUpperCase();
+      node.setAttribute("hreflang", next);
+      node.setAttribute("lang", next);
+      node.setAttribute("data-lang-next", next);
+      node.setAttribute("aria-label", label);
+      node.setAttribute("title", label);
+    });
+    try {
+      localStorage.setItem("locale", current);
+    } catch {
+      // ignore
+    }
+  }
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const link = target.closest("[data-lang-toggle]");
+    if (!(link instanceof HTMLAnchorElement)) return;
+    const next = link.getAttribute("data-lang-next");
+    if (!next) return;
+    try {
+      localStorage.setItem("locale", next);
+    } catch {
+      // ignore
+    }
+  });
+
+  document.addEventListener("astro:page-load", syncLangToggle);
+</script>

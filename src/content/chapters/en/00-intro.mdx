@@ -1,0 +1,99 @@
+---
+title: Introduction
+part: Introduction
+order: 0
+summary: Notation, radians, vectors, and NumPy — just enough to read kinematics.
+---
+
+import Eq from "../../../components/Eq.astro"
+import { Code } from "astro-expressive-code/components"
+import rot2 from "../../../../examples/rot2.py?raw"
+
+This is not a course in mathematics, physics, or programming. The book is about robots: formulas, forces, and code show up when you cannot assemble motion without them. This chapter is a contract: how we write, what we assume, what we postpone.
+
+School trigonometry and ordinary Python (`def`, `import`, a list) are enough. We do not drag in linear algebra past a second-year course. If the line below reads without a pause, go on to [2R kinematics](/en/chapters/01-kinematics/).
+
+## Angles
+
+In formulas and in code, angles are **radians** unless we say otherwise. A full turn is <Eq math="2 pi" />. Degrees stay on captions and on sliders in the figures.
+
+<Eq display math="38 degree = 38 pi / 180" />
+
+In NumPy the conversion is:
+
+```python
+import numpy as np
+
+np.deg2rad(38)
+np.rad2deg(0.66)
+```
+
+## Configuration and vectors
+
+A manipulator's state is a set of joint coordinates. That is a point in configuration space:
+
+<Eq display math="q = (q_1, dots, q_n) in bb(R)^n" />
+
+For a planar 2R, <Eq math="n = 2" />. The gripper pose in the plane is an ordinary point:
+
+<Eq display math="p = vec(x, y) in bb(R)^2" />
+
+In the text, <Eq math="q" /> and <Eq math="p" /> are vectors. In code they are NumPy arrays of shape `(n,)`, not nested lists. Addition and length are school-level; we write a column as <Eq math="vec(x, y)" /> when multiplying by a matrix.
+
+## Rotation in the plane
+
+A rotation by an angle <Eq math="theta" /> is a <Eq math="2 times 2" /> matrix:
+
+<Eq display math="R(theta) = mat(cos theta, -sin theta; sin theta, cos theta)" />
+
+That is enough for the next chapter. Rotations in space, screws, and <Eq math={'upright("SO")(3)'} /> come later, when the robot is no longer planar.
+
+Forward kinematics is built from the angle-addition formulas — they should look familiar:
+
+<Eq display math="cos(alpha + beta) = cos alpha cos beta - sin alpha sin beta" />
+
+<Eq display math="sin(alpha + beta) = sin alpha cos beta + cos alpha sin beta" />
+
+## Formula → function
+
+An “algorithm” in this book is not sorting and not a complexity bound. It is a procedure: input, output, the same letters as in the formula. The matrix <Eq math="R(theta)" /> becomes the function `rot2`:
+
+```python title="rot2.py"
+import numpy as np
+
+def rot2(theta):
+    c, s = np.cos(theta), np.sin(theta)
+    return np.array([[c, -s], [s, c]])
+```
+
+The full file can be run on its own: rotating the basis vector <Eq math="(1, 0)" /> by 90° should give <Eq math="(0, 1)" />.
+
+<Code code={rot2} lang="python" title="examples/rot2.py" />
+
+```bash
+python examples/rot2.py
+```
+
+The same move later: read a motion law, write a function, check it on a number.
+
+## What we postpone
+
+No need to close these in advance.
+
+- **Physics** — forces, energy, inertia. Before dynamics, not before the arm's geometry.
+- **Derivatives** — when velocity and the Jacobian appear. We will recall the chain rule on the spot.
+- **Graphs, search, `A*`** — before trajectory planning.
+
+If the Jacobian sounds empty now, that is fine. The 2R chapter does not need it.
+
+## Checklist
+
+Before the next chapter, these lines should look familiar:
+
+- an angle in a formula is radians; `38` on a slider is degrees;
+- <Eq math="q in bb(R)^2" /> — a pair of numbers, not a mysterious space;
+- <Eq math="cos(q_1 + q_2)" /> — cosine of a sum, not a product of cosines;
+- `np.array([x, y])` — a vector you can add and multiply by a matrix;
+- a function `fk(q)` returns <Eq math="p" />: configuration in, point out.
+
+If that all reads — [2R kinematics](/en/chapters/01-kinematics/). If one line is murky, close only that gap, not a calculus textbook from chapter one.

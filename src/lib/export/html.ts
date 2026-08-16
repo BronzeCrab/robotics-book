@@ -1,10 +1,14 @@
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
-import { book } from "../site";
 import { collectEbookCss } from "./extract";
+import type { BookMeta } from "../site";
 import type { ExtractedChapter } from "./types";
 
-export async function writeSingleHtml(distDir: string, chapters: ExtractedChapter[]) {
+export async function writeSingleHtml(
+  distDir: string,
+  chapters: ExtractedChapter[],
+  book: BookMeta,
+) {
   const css = await collectEbookCss(distDir);
   const body = chapters
     .map(

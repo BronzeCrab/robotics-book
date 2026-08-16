@@ -1,0 +1,52 @@
+---
+import BookLayout from "../BookLayout.astro";
+import { getChapters } from "../../lib/chapters";
+import { asLocale, localePath, t } from "../../lib/i18n";
+import { downloadHref, ebookFormats, getBook } from "../../lib/site";
+
+const locale = asLocale(Astro.currentLocale);
+const book = getBook(locale);
+const chapters = await getChapters(locale);
+const note = t(locale, "downloadNote").replace("{file}", book.filename);
+---
+
+<BookLayout
+  title={t(locale, "downloadPageTitle")}
+  description={t(locale, "downloadLede")}
+  chapters={chapters}
+>
+  <p class="chapter-kicker">{t(locale, "downloadKicker")}</p>
+  <h1>{t(locale, "downloadHeading")}</h1>
+  <p class="chapter-lede">
+    {t(locale, "downloadLede")}
+  </p>
+
+  <ul class="download-list">
+    {
+      ebookFormats(locale).map((format) => (
+        <li>
+          <a class="download-card" href={downloadHref(format, locale)} download>
+            <span class="download-ext">{format.ext}</span>
+            <span>
+              <strong>{format.title}</strong>
+              <span class="download-blurb">{format.blurb}</span>
+              <span class="download-readers">{format.readers}</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2>{t(locale, "downloadWhyTitle")}</h2>
+  <p>
+    {t(locale, "downloadWhyBody")}
+  </p>
+  <p>
+    {t(locale, "downloadPrintBefore")}
+    <a href={localePath(locale, "/print/")}>{t(locale, "downloadPrintLink")}</a>.
+  </p>
+  <p class="download-note">
+    {note}
+  </p>
+</BookLayout>

@@ -1,0 +1,57 @@
+---
+title: 2R Kinematics
+part: Geometry
+order: 1
+summary: Forward kinematics of a planar manipulator with two revolute joints.
+---
+
+import Eq from "../../../components/Eq.astro"
+import Figure from "../../../components/Figure.astro"
+import Scene3D from "../../../components/Scene3D.astro"
+import Arm2R from "../../../components/scenes/Arm2R.vue"
+import { Code } from "astro-expressive-code/components"
+import fk from "../../../../examples/fk.py?raw"
+
+The arm's configuration is a pair of joint angles. It is convenient to write it as a point on a torus:
+
+<Eq display math="q = (q_1, q_2) in cal(Q) subset.eq bb(R)^2" />
+
+If the link lengths are <Eq math="l_1" /> and <Eq math="l_2" />, forward kinematics gives the gripper position:
+
+<Eq display math="vec(x, y) = vec(l_1 cos(q_1) + l_2 cos(q_1 + q_2), l_1 sin(q_1) + l_2 sin(q_1 + q_2))" />
+
+The geometry matches the figure: the first link rotates by <Eq math="q_1" />, the second by an additional <Eq math="q_2" /> relative to the first.
+
+<Figure src="rr-arm.typ" caption="Planar RR manipulator: links l₁, l₂ and gripper p = (x, y)." />
+
+The same geometry in 3D: drag the joints with the sliders, the camera with the mouse. A finished robot from CAD goes in `public/models/` as `.glb` and is inserted with `Model3D`.
+
+<Scene3D caption="Interactive 2R: q₁ and q₂ in degrees, Y up, as in the figure.">
+  <Arm2R client:only="vue">
+    <p class="book-scene-loading">Loading 3D…</p>
+  </Arm2R>
+</Scene3D>
+
+## Python code
+
+The same law in NumPy. Below is a fragment with the trigonometric lines highlighted:
+
+```python title="fk.py" {6-9}
+import numpy as np
+
+def fk(q, l1, l2):
+    q1, q2 = q
+    x = l1 * np.cos(q1) + l2 * np.cos(q1 + q2)
+    y = l1 * np.sin(q1) + l2 * np.sin(q1 + q2)
+    return np.array([x, y])
+```
+
+The full file lives in `examples/` and is inserted as-is — you can run it apart from the site:
+
+<Code code={fk} lang="python" title="examples/fk.py" />
+
+A short run from the terminal:
+
+```bash
+python examples/fk.py
+```

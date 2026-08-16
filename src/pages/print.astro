@@ -1,34 +1,5 @@
 ---
-import { render } from "astro:content";
-import Base from "../layouts/Base.astro";
-import { getChapters } from "../lib/chapters";
-import { book } from "../lib/site";
-
-const chapters = await getChapters();
-const rendered = await Promise.all(
-  chapters.map(async (chapter) => ({
-    chapter,
-    Content: (await render(chapter)).Content,
-  })),
-);
+import PrintPage from "../components/pages/PrintPage.astro";
 ---
 
-<Base title="Печать" description={`Версия для печати: ${book.title}`} print>
-  <main id="content" class="print-book">
-    <header class="print-title">
-      <p class="chapter-kicker">Книга</p>
-      <h1>{book.title}</h1>
-      <p class="chapter-lede">{book.description}</p>
-    </header>
-    {
-      rendered.map(({ chapter, Content }) => (
-        <section class="print-chapter" id={chapter.id}>
-          <p class="chapter-kicker">{chapter.data.part}</p>
-          <h1>{chapter.data.title}</h1>
-          <p class="chapter-lede">{chapter.data.summary}</p>
-          <Content />
-        </section>
-      ))
-    }
-  </main>
-</Base>
+<PrintPage />

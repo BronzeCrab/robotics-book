@@ -8,8 +8,9 @@ const { chromium } = require("playwright-core");
 
 const distDir = process.argv[2];
 const outFile = process.argv[3];
+const printPath = process.argv[4] || "/print/";
 if (!distDir || !outFile) {
-  console.error("usage: export-pdf.mjs <distDir> <outFile>");
+  console.error("usage: export-pdf.mjs <distDir> <outFile> [printPath]");
   process.exit(1);
 }
 
@@ -65,7 +66,7 @@ if (!browser) {
 
 const page = await browser.newPage();
 await page.emulateMedia({ media: "print" });
-await page.goto(`http://127.0.0.1:${address.port}/print/`, {
+await page.goto(`http://127.0.0.1:${address.port}${printPath}`, {
   waitUntil: "networkidle",
 });
 await page.pdf({

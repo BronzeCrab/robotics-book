@@ -1,7 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
 import type { Chapter } from "../lib/chapters";
-import { groupedByPart } from "../lib/chapters";
+import { chapterHref, groupedByPart } from "../lib/chapters";
+import { asLocale, t } from "../lib/i18n";
 
 interface Props {
   title: string;
@@ -12,14 +13,15 @@ interface Props {
   next?: Chapter;
 }
 
+const locale = asLocale(Astro.currentLocale);
 const { title, description, chapters, currentId, prev, next } = Astro.props;
 const parts = groupedByPart(chapters);
 ---
 
 <Base title={title} description={description}>
   <div class="book-shell">
-    <aside class="toc" transition:persist="book-toc">
-      <p class="toc-label">Оглавление</p>
+    <aside class="toc" transition:persist={`book-toc-${locale}`}>
+      <p class="toc-label">{t(locale, "toc")}</p>
       {
         parts.map(({ part, chapters: partChapters }) => (
           <section class="toc-part">
@@ -30,7 +32,7 @@ const parts = groupedByPart(chapters);
               {partChapters.map((chapter) => (
                 <li>
                   <a
-                    href={`/chapters/${chapter.id}/`}
+                    href={chapterHref(locale, chapter)}
                     aria-current={chapter.id === currentId ? "page" : undefined}
                   >
                     {chapter.data.title}
@@ -50,18 +52,18 @@ const parts = groupedByPart(chapters);
 
       {
         (prev || next) && (
-          <nav class="pager" aria-label="Соседние главы">
+          <nav class="pager" aria-label={t(locale, "pagerAria")}>
             {prev ? (
-              <a class="pager-link" href={`/chapters/${prev.id}/`}>
-                <span class="pager-dir">Назад</span>
+              <a class="pager-link" href={chapterHref(locale, prev)}>
+                <span class="pager-dir">{t(locale, "pagerPrev")}</span>
                 <span class="pager-title">{prev.data.title}</span>
               </a>
             ) : (
               <span />
             )}
             {next ? (
-              <a class="pager-link pager-next" href={`/chapters/${next.id}/`}>
-                <span class="pager-dir">Дальше</span>
+              <a class="pager-link pager-next" href={chapterHref(locale, next)}>
+                <span class="pager-dir">{t(locale, "pagerNext")}</span>
                 <span class="pager-title">{next.data.title}</span>
               </a>
             ) : (

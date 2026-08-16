@@ -1,0 +1,18 @@
+---
+import ChapterPage from "../../../components/pages/ChapterPage.astro";
+import { chapterStaticPaths } from "../../../lib/chapter-paths";
+import type { Chapter } from "../../../lib/chapters";
+
+export async function getStaticPaths() {
+  return chapterStaticPaths("en");
+}
+
+interface Props {
+  chapter: Chapter;
+  chapters: Chapter[];
+}
+
+const { chapter, chapters } = Astro.props;
+---
+
+<ChapterPage chapter={chapter} chapters={chapters} />

@@ -1,15 +1,10 @@
 ---
-import { render } from "astro:content";
-import BookLayout from "../../components/BookLayout.astro";
-import { getChapters, neighbors } from "../../lib/chapters";
+import ChapterPage from "../../components/pages/ChapterPage.astro";
+import { chapterStaticPaths } from "../../lib/chapter-paths";
 import type { Chapter } from "../../lib/chapters";
 
 export async function getStaticPaths() {
-  const chapters = await getChapters();
-  return chapters.map((chapter) => ({
-    params: { slug: chapter.id },
-    props: { chapter, chapters },
-  }));
+  return chapterStaticPaths("ru");
 }
 
 interface Props {
@@ -18,23 +13,6 @@ interface Props {
 }
 
 const { chapter, chapters } = Astro.props;
-const { Content } = await render(chapter);
-const { prev, next } = neighbors(chapters, chapter.id);
 ---
 
-<BookLayout
-  title={chapter.data.title}
-  description={chapter.data.summary}
-  chapters={chapters}
-  currentId={chapter.id}
-  prev={prev}
-  next={next}
->
-  {chapter.data.part !== chapter.data.title && (
-    <p class="chapter-kicker">{chapter.data.part}</p>
-  )}
-  <h1>{chapter.data.title}</h1>
-  <p class="chapter-lede">{chapter.data.summary}</p>
-  <Content />
-
-</BookLayout>
+<ChapterPage chapter={chapter} chapters={chapters} />

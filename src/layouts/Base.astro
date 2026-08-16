@@ -2,6 +2,9 @@
 import { ClientRouter } from "astro:transitions";
 import "../styles/global.css";
 import ThemeToggle from "../components/ThemeToggle.astro";
+import LangToggle from "../components/LangToggle.astro";
+import { asLocale, locales, localePath, stripLocale, t } from "../lib/i18n";
+import { getBook } from "../lib/site";
 
 interface Props {
   title?: string;
@@ -9,15 +12,19 @@ interface Props {
   print?: boolean;
 }
 
+const locale = asLocale(Astro.currentLocale);
+const book = getBook(locale);
 const { title, description, print = false } = Astro.props;
-const pageTitle = title
-  ? `${title} · Книга по робототехнике`
-  : "Книга по робототехнике";
+const pageTitle = title ? `${title} · ${book.title}` : book.title;
+const path = stripLocale(Astro.url.pathname);
+const canonical = Astro.site
+  ? new URL(localePath(locale, path), Astro.site).href
+  : undefined;
 ---
 
 <!doctype html>
 <html
-  lang="ru"
+  lang={locale}
   transition:animate="none"
   data-theme={print ? "light" : undefined}
   data-print={print ? "true" : undefined}
@@ -29,6 +36,26 @@ const pageTitle = title
     <meta name="generator" content={Astro.generator} />
     {description && <meta name="description" content={description} />}
     <title>{pageTitle}</title>
+    {canonical && <link rel="canonical" href={canonical} />}
+    {
+      Astro.site &&
+        locales.map((code) => (
+          <link
+            rel="alternate"
+            hreflang={code}
+            href={new URL(localePath(code, path), Astro.site).href}
+          />
+        ))
+    }
+    {
+      Astro.site && (
+        <link
+          rel="alternate"
+          hreflang="x-default"
+          href={new URL(localePath("ru", path), Astro.site).href}
+        />
+      )
+    }
     {!print && <ClientRouter fallback="swap" />}
     {
       !print && (
@@ -62,14 +89,21 @@ const pageTitle = title
     }
   </head>
   <body>
-    <a class="skip-link" href="#content">К содержанию</a>
-    <header class="site-header" transition:persist="site-header">
-      <a class="site-mark" href="/">Книга по робототехнике</a>
-      <nav class="site-nav" aria-label="Разделы">
-        <a href="/">Оглавление</a>
-        <a href="/downloads/">Скачать</a>
+    <a class="skip-link" href="#content">{t(locale, "skipToContent")}</a>
+    <header class="site-header" transition:persist={`site-header-${locale}`}>
+      <a class="site-mark" href={localePath(locale, "/")}>{book.title}</a>
+      <nav class="site-nav" aria-label={t(locale, "navAria")}>
+        <a href={localePath(locale, "/")}>{t(locale, "toc")}</a>
+        <a href={localePath(locale, "/downloads/")}>{t(locale, "downloads")}</a>
       </nav>
-      {!print && <ThemeToggle />}
+      {
+        !print && (
+          <div class="site-tools">
+            <LangToggle />
+            <ThemeToggle />
+          </div>
+        )
+      }
     </header>
     <slot />
   </body>

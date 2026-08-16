@@ -1,9 +1,12 @@
 ---
+import { asLocale, t } from "../lib/i18n";
+
 interface Props {
   caption: string;
 }
 
 const { caption } = Astro.props;
+const locale = asLocale(Astro.currentLocale);
 ---
 
 <figure class="book-scene">
@@ -11,7 +14,7 @@ const { caption } = Astro.props;
     <slot />
   </div>
   <p class="book-scene-fallback">
-    Интерактивная 3D-сцена. Откройте главу на сайте, чтобы вращать модель.
+    {t(locale, "sceneFallback")}
   </p>
   <figcaption>{caption}</figcaption>
 </figure>

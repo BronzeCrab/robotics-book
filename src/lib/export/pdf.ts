@@ -1,15 +1,20 @@
 import { spawn } from "node:child_process";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
-import { book } from "../site";
+import type { BookMeta } from "../site";
 import type { ExportLogger } from "./types";
 
-export async function writePdf(distDir: string, logger: ExportLogger) {
+export async function writePdf(
+  distDir: string,
+  logger: ExportLogger,
+  book: BookMeta,
+  printPath = "/print/",
+) {
   const out = path.join(distDir, "downloads", `${book.filename}.pdf`);
   const script = path.join(process.cwd(), "scripts", "export-pdf.mjs");
 
   const code = await new Promise<number>((resolve) => {
-    const child = spawn(process.execPath, [script, distDir, out], {
+    const child = spawn(process.execPath, [script, distDir, out, printPath], {
       stdio: ["ignore", "pipe", "pipe"],
     });
     let stderr = "";

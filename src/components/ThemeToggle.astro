@@ -1,16 +1,19 @@
 ---
+import { asLocale, t } from "../lib/i18n";
+
 interface Props {
   class?: string;
 }
 
 const { class: className } = Astro.props;
+const locale = asLocale(Astro.currentLocale);
 ---
 
 <button
   type="button"
   class:list={["theme-toggle", className]}
   data-theme-toggle
-  aria-label="Переключить тему"
+  aria-label={t(locale, "themeToggle")}
 >
   <span class="theme-toggle-icon theme-toggle-sun" aria-hidden="true">☀</span>
   <span class="theme-toggle-icon theme-toggle-moon" aria-hidden="true">☾</span>

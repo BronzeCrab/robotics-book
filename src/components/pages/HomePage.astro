@@ -1,0 +1,55 @@
+---
+import BookLayout from "../BookLayout.astro";
+import { chapterHref, getChapters, groupedByPart } from "../../lib/chapters";
+import { asLocale, t } from "../../lib/i18n";
+import { getBook } from "../../lib/site";
+
+const locale = asLocale(Astro.currentLocale);
+const book = getBook(locale);
+const chapters = await getChapters(locale);
+const parts = groupedByPart(chapters);
+const first = chapters[0];
+---
+
+<BookLayout
+  title={t(locale, "toc")}
+  description={book.description}
+  chapters={chapters}
+>
+  <p class="chapter-kicker">{t(locale, "draft")}</p>
+  <h1>{book.title}</h1>
+  <p class="chapter-lede">
+    {t(locale, "homeLede")}
+  </p>
+
+  {
+    parts.map(({ part, chapters: partChapters }) => (
+      <section class="home-part">
+        {!(
+          partChapters.length === 1 && partChapters[0].data.title === part
+        ) && <h2>{part}</h2>}
+        <ul class="home-chapters">
+          {partChapters.map((chapter) => (
+            <li>
+              <a href={chapterHref(locale, chapter)}>
+                <span class="home-chapter-title">{chapter.data.title}</span>
+                <span class="home-chapter-summary">{chapter.data.summary}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+
+  {
+    first && (
+      <p class="home-start">
+        <a class="pager-link" href={chapterHref(locale, first)}>
+          <span class="pager-dir">{t(locale, "startReading")}</span>
+          <span class="pager-title">{first.data.title}</span>
+        </a>
+      </p>
+    )
+  }
+</BookLayout>

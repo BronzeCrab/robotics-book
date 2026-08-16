@@ -1,0 +1,41 @@
+---
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { getChapters } from "../../lib/chapters";
+import { asLocale, t } from "../../lib/i18n";
+import { getBook } from "../../lib/site";
+
+const locale = asLocale(Astro.currentLocale);
+const book = getBook(locale);
+const chapters = await getChapters(locale);
+const rendered = await Promise.all(
+  chapters.map(async (chapter) => ({
+    chapter,
+    Content: (await render(chapter)).Content,
+  })),
+);
+---
+
+<Base
+  title={t(locale, "printTitle")}
+  description={`${t(locale, "printTitle")}: ${book.title}`}
+  print
+>
+  <main id="content" class="print-book">
+    <header class="print-title">
+      <p class="chapter-kicker">{t(locale, "printKicker")}</p>
+      <h1>{book.title}</h1>
+      <p class="chapter-lede">{book.description}</p>
+    </header>
+    {
+      rendered.map(({ chapter, Content }) => (
+        <section class="print-chapter" id={chapter.id}>
+          <p class="chapter-kicker">{chapter.data.part}</p>
+          <h1>{chapter.data.title}</h1>
+          <p class="chapter-lede">{chapter.data.summary}</p>
+          <Content />
+        </section>
+      ))
+    }
+  </main>
+</Base>

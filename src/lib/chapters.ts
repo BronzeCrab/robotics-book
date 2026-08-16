@@ -1,10 +1,29 @@
 import { getCollection, type CollectionEntry } from "astro:content";
+import { asLocale, localePath, type Locale } from "./i18n";
 
 export type Chapter = CollectionEntry<"chapters">;
 
-export async function getChapters(): Promise<Chapter[]> {
-  const chapters = await getCollection("chapters");
+export function chapterSlug(chapter: Chapter): string {
+  const id = chapter.id.replaceAll("\\", "/");
+  const slash = id.indexOf("/");
+  return slash === -1 ? id : id.slice(slash + 1);
+}
+
+export function chapterLocale(chapter: Chapter): Locale {
+  const id = chapter.id.replaceAll("\\", "/");
+  return asLocale(id.split("/")[0]);
+}
+
+export async function getChapters(locale: Locale): Promise<Chapter[]> {
+  const chapters = await getCollection(
+    "chapters",
+    (entry) => chapterLocale(entry) === locale,
+  );
   return chapters.sort((a, b) => a.data.order - b.data.order);
+}
+
+export function chapterHref(locale: Locale, chapter: Chapter) {
+  return localePath(locale, `/chapters/${chapterSlug(chapter)}/`);
 }
 
 export function neighbors(chapters: Chapter[], id: string) {

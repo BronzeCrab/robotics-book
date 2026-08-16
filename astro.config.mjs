@@ -11,6 +11,13 @@ import templateCompilerOptions from "@tresjs/core/template-compiler-options";
 export default defineConfig({
   site: "https://example.com",
   trailingSlash: "always",
+  i18n: {
+    defaultLocale: "ru",
+    locales: ["ru", "en"],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   markdown: {
     syntaxHighlight: false,
   },

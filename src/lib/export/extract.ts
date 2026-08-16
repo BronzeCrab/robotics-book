@@ -3,6 +3,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { load } from "cheerio";
 import type { ExtractedChapter } from "./types";
+import { defaultLocale, type Locale } from "../i18n";
 
 function rewriteLocalUrls(html: string, distDir: string) {
   const $ = load(html, { decodeEntities: false });
@@ -26,12 +27,24 @@ function rewriteLocalUrls(html: string, distDir: string) {
   return $.root().html() ?? html;
 }
 
-export async function extractChapters(distDir: string): Promise<ExtractedChapter[]> {
-  const chaptersDir = path.join(distDir, "chapters");
-  const slugs = (await readdir(chaptersDir, { withFileTypes: true }))
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name)
-    .sort();
+export async function extractChapters(
+  distDir: string,
+  locale: Locale = defaultLocale,
+): Promise<ExtractedChapter[]> {
+  const chaptersDir =
+    locale === defaultLocale
+      ? path.join(distDir, "chapters")
+      : path.join(distDir, locale, "chapters");
+
+  let slugs: string[] = [];
+  try {
+    slugs = (await readdir(chaptersDir, { withFileTypes: true }))
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .sort();
+  } catch {
+    return [];
+  }
 
   const chapters: ExtractedChapter[] = [];
   for (const slug of slugs) {
