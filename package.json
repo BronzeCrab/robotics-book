@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "engines": {
-    "node": ">=22.12.0"
+    "node": "^26.13.0"
   },
   "scripts": {
     "dev": "astro dev",
@@ -13,30 +13,30 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/mdx": "^7.0.5",
-    "@astrojs/vue": "^7.0.2",
-    "@expressive-code/plugin-line-numbers": "^0.44.1",
-    "@fontsource-variable/source-serif-4": "^5.3.0",
+    "@astrojs/mdx": "^8.1.2",
+    "@astrojs/vue": "^7.1.2",
+    "@expressive-code/plugin-line-numbers": "^0.44.3",
+    "@fontsource-variable/source-serif-4": "^5.3.1",
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@myriaddreamin/typst-ts-node-compiler": "^0.7.0",
     "@myriaddreamin/typst-ts-renderer": "^0.7.0",
     "@myriaddreamin/typst.ts": "0.7.0",
     "@tailwindcss/vite": "^4.3.3",
-    "@tresjs/cientos": "^5.8.1",
-    "@tresjs/core": "^5.8.3",
-    "astro": "^7.2.2",
-    "astro-expressive-code": "^0.44.1",
+    "@tresjs/cientos": "^5.10.1",
+    "@tresjs/core": "^5.10.1",
+    "astro": "^7.4.4",
+    "astro-expressive-code": "^0.44.3",
     "astro-typst": "^0.12.4",
     "cheerio": "^1.2.0",
     "epub-gen-memory": "^1.1.2",
-    "jszip": "^3.10.1",
-    "playwright-core": "^1.62.1",
-    "sharp": "^0.35.3",
+    "jszip": "^3.10.2",
+    "playwright-core": "^1.64.1",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4.3.3",
-    "three": "^0.185.1",
-    "vue": "^3.5.41"
+    "three": "^0.187.0",
+    "vue": "^3.5.44"
   },
   "devDependencies": {
-    "@types/three": "^0.185.4"
+    "@types/three": "^0.187.0"
   }
 }
