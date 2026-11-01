@@ -396,6 +396,122 @@ body {
   width: 100%;
 }
 
+.model-viewer,
+.robot-viewer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.model-viewer-canvas,
+.robot-viewer-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.model-viewer-canvas > .book-scene-loading,
+.robot-viewer-canvas > .book-scene-loading {
+  position: absolute;
+  inset: 0;
+  height: auto;
+  background: var(--card);
+}
+
+.model-viewer-controls,
+.robot-viewer-controls {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.7rem 0.9rem 0.85rem;
+  border-top: 1px solid var(--line);
+  background: var(--card);
+  font-size: 0.92rem;
+}
+
+.model-viewer-controls > label,
+.robot-viewer-controls > label {
+  display: grid;
+  grid-template-columns: minmax(8rem, 14rem) 1fr;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.model-viewer-controls input[type="range"],
+.robot-viewer-controls input[type="range"] {
+  width: 100%;
+}
+
+.model-viewer-actions,
+.robot-viewer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 0.15rem;
+}
+
+.model-viewer-check,
+.robot-viewer-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+}
+
+.model-viewer-actions button,
+.robot-viewer-actions button {
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+}
+
+.model-viewer-actions button:hover,
+.robot-viewer-actions button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.model-viewer-actions button:disabled,
+.robot-viewer-actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.robot-viewer-empty {
+  margin: 0;
+  color: var(--muted);
+}
+
+.model-viewer-error,
+.robot-viewer-error {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.robot-label {
+  pointer-events: none;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.3rem;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
 .pager {
   max-width: 65ch;
   margin: 2.5rem auto 0;

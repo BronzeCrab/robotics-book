@@ -42,17 +42,52 @@ import Video from "../../components/Video.astro"
 
 Схемы Typst/CeTZ в CDN не уходят: это SVG внутри HTML.
 
-3D — TresJS (Vue-остров, грузится только у сцены). Свою сцену пишете в `src/components/scenes/`. Готовый glTF:
+## 3D-модели
+
+TresJS (Vue-остров, грузится только у сцены). Свою сцену пишете в `src/components/scenes/`. Файлы — в `public/models/`.
+
+### Сборка из SolidCraft с суставами
+
+`RobotViewer` грузит URDF и строит ползунки по подвижным суставам (`revolute`, `continuous`, `prismatic`). В SolidCraft: **File → Export URDF…** — рядом с `robot.urdf` появятся STL-меши.
 
 ```mdx
 import Scene3D from "../../components/Scene3D.astro"
-import Model3D from "../../components/scenes/Model3D.vue"
+import RobotViewer from "../../components/scenes/RobotViewer.vue"
 
-<Scene3D caption="Модель манипулятора.">
-  <Model3D client:only="vue" src="/models/arm.glb">
-    <p>Загрузка 3D…</p>
-  </Model3D>
+<Scene3D caption="Двухзвенный манипулятор.">
+  <RobotViewer
+    client:only="vue"
+    src="/models/arm2r/robot.urdf"
+    pose={{ base_to_link_1: 35, link_1_to_link_2: 55 }}
+    labels={{ base_link: "основание", link_1: "звено 1", link_2: "звено 2" }}
+  />
 </Scene3D>
 ```
 
-Файлы моделей — в `public/models/`. В PDF/EPUB остаётся подпись: WebGL в книге-файле нет.
+- `pose` — стартовая поза: градусы для вращательных, метры для поступательных.
+- `labels` — подписи ссылок; без него подчёркивания заменяются пробелами.
+- `show-labels={false}` — выключить подписи.
+- Если в сборке нет подвижных суставов, ползунков не будет — модель просто отобразится.
+
+В MDX props передаются как `labels={{ ... }}`. Синтаксис `:labels` работает только в шаблонах `.vue`, в MDX/Astro он не сработает.
+
+### Статичная модель: 3MF, OBJ, STL, GLB
+
+`ModelViewer` поддерживает `.3mf`, `.obj`, `.stl`, `.glb`, `.gltf` и умеет разносить части.
+
+```mdx
+import ModelViewer from "../../components/scenes/ModelViewer.vue"
+
+<Scene3D caption="Сборка схвата.">
+  <ModelViewer client:only="vue" src="/models/gripper/gripper.3mf" />
+</Scene3D>
+```
+
+- Для SolidCraft лучше **3MF**: один файл, несколько тел и цвета.
+- `auto-rotate` — медленное вращение, `background` — цвет фона.
+- `up="z"` / `up="y"` — если автоопределение оси не подходит (CAD — Z-up, glTF — Y-up).
+- Для старых сцен с `.glb` и Draco остаётся `Model3D.vue`.
+
+Демо-файлы: `public/models/test-arm/robot.urdf` и `public/models/test-assembly/assembly.obj`.
+
+Ограничения: URDF — дерево, замкнутые кинематические цепи SolidCraft при экспорте теряет; цвет в URDF берётся от первого тела ссылки, PBR-материалов нет. В PDF/EPUB остаётся подпись: WebGL в книге-файле нет.
