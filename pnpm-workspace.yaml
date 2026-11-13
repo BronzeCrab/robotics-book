@@ -1,3 +1,7 @@
 allowBuilds:
   esbuild: true
   sharp: true
+
+peerDependencyRules:
+  allowedVersions:
+    "astro-integration-kit>astro": "7"

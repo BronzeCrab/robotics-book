@@ -20,6 +20,7 @@
   --accent: #2563eb;
   --accent-2: #0f766e;
   --card: #f4f4f5;
+  --measure: 130ch;
 }
 
 [data-theme="dark"] {
@@ -194,7 +195,7 @@ body {
 }
 
 .chapter-body {
-  max-width: 65ch;
+  max-width: var(--measure);
   margin: 0 auto;
 }
 
@@ -513,7 +514,7 @@ body {
 }
 
 .pager {
-  max-width: 65ch;
+  max-width: var(--measure);
   margin: 2.5rem auto 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
